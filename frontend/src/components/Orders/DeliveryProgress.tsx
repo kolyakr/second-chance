@@ -67,7 +67,6 @@ export const DeliveryProgress = ({ status }: DeliveryProgressProps) => {
         {steps.map((step, index) => {
           const isCompleted = index < activeStep;
           const isActive = index === activeStep;
-          const isPending = index > activeStep;
 
           return (
             <Step key={step.value} completed={isCompleted}>

@@ -15,7 +15,6 @@ import {
   useDeleteComment,
 } from "../../features/posts/hooks/useComments";
 import { Send, Delete } from "@mui/icons-material";
-import toast from "react-hot-toast";
 import CommentSkeleton from "../../shared/components/Skeletons/CommentSkeleton";
 
 interface CommentsSectionProps {

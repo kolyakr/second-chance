@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../store/authStore";
@@ -53,15 +54,20 @@ export const useRegister = () => {
 export const useMe = () => {
   const { setAuth, isAuthenticated } = useAuthStore();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["auth", "me"],
     queryFn: () => authApi.getMe(),
     enabled: isAuthenticated,
-    onSuccess: (data) => {
-      setAuth(data.user, data.token);
-    },
     retry: false,
   });
+
+  useEffect(() => {
+    if (query.data) {
+      setAuth(query.data.user, query.data.token);
+    }
+  }, [query.data, setAuth]);
+
+  return query;
 };
 
 export const useVerifyEmail = () => {

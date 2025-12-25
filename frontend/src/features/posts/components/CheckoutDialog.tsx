@@ -14,7 +14,6 @@ import {
   StepLabel,
   Paper,
   Divider,
-  Alert,
   Grid,
   Autocomplete,
 } from "@mui/material";
@@ -179,7 +178,6 @@ export const CheckoutDialog = ({
   const [activeStep, setActiveStep] = useState(0);
   const [processing, setProcessing] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
 
@@ -230,7 +228,6 @@ export const CheckoutDialog = ({
           });
 
           if (orderResult.success) {
-            setOrderId(orderResult.data._id);
             // Create payment intent
             const paymentResult = await paymentsApi.createPaymentIntent(
               orderResult.data._id
@@ -272,7 +269,6 @@ export const CheckoutDialog = ({
         onClose();
         formik.resetForm();
         setActiveStep(0);
-        setOrderId(null);
         setClientSecret(null);
         setPaymentIntentId(null);
         // Navigate to orders page
@@ -296,7 +292,6 @@ export const CheckoutDialog = ({
       setPaymentIntentId(null);
     } else if (activeStep === 1) {
       setActiveStep(0);
-      setOrderId(null);
     }
   };
 
@@ -305,7 +300,6 @@ export const CheckoutDialog = ({
       onClose();
       formik.resetForm();
       setActiveStep(0);
-      setOrderId(null);
       setClientSecret(null);
       setPaymentIntentId(null);
     }
