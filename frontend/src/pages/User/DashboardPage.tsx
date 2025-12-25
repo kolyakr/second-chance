@@ -179,7 +179,7 @@ const DashboardPage = () => {
                       gap: { xs: 1.5, sm: 2 },
                     }}
                   >
-                    {data.data?.savedPosts?.slice(0, 5).map((post: any) => (
+                    {data?.data?.savedPosts?.slice(0, 5).map((post: any) => (
                       <PostCard key={post._id} post={post} />
                     ))}
                   </Box>

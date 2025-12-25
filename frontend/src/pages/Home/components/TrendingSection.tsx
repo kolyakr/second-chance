@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Grid, Button, Paper } from "@mui/material";
+import { Box, Container, Typography, Grid, Button } from "@mui/material";
 import { TrendingUp, ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTrendingPosts } from "../../../features/posts/hooks/usePosts";

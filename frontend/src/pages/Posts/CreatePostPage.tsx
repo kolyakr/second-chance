@@ -14,7 +14,6 @@ import {
   Chip,
   Grid,
   CircularProgress,
-  IconButton,
 } from "@mui/material";
 import { AutoAwesome, ImageSearch } from "@mui/icons-material";
 import { useFormik } from "formik";

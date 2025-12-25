@@ -24,7 +24,6 @@ import {
   useMyOrders,
   useSellerOrders,
 } from "../../features/posts/hooks/useOrders";
-import { useAuthStore } from "../../features/auth/store/authStore";
 import { DeliveryProgress } from "../../components/Orders/DeliveryProgress";
 import { format } from "date-fns";
 import OrderCardSkeleton from "../../shared/components/Skeletons/OrderCardSkeleton";
