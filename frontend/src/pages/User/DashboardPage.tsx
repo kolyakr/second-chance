@@ -112,9 +112,9 @@ const DashboardPage = () => {
                 >
                   Ваші останні оголошення
                 </Typography>
-                {data?.data?.recentPosts?.length > 0 ? (
+                {data?.data?.recentPosts && data.data.recentPosts.length > 0 ? (
                   <Grid container spacing={{ xs: 2, sm: 2 }}>
-                    {data.data.recentPosts.map((post: any) => (
+                    {data.data?.recentPosts?.map((post: any) => (
                       <Grid item xs={12} sm={6} key={post._id}>
                         <PostCard post={post} />
                       </Grid>
@@ -179,7 +179,7 @@ const DashboardPage = () => {
                       gap: { xs: 1.5, sm: 2 },
                     }}
                   >
-                    {data.data.savedPosts.slice(0, 5).map((post: any) => (
+                    {data.data?.savedPosts?.slice(0, 5).map((post: any) => (
                       <PostCard key={post._id} post={post} />
                     ))}
                   </Box>

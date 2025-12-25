@@ -11,7 +11,6 @@ import {
   Tab,
   Avatar,
   Divider,
-  CircularProgress,
   Alert,
 } from "@mui/material";
 import {
@@ -53,7 +52,6 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const OrdersPage = () => {
-  const { user } = useAuthStore();
   const [tabValue, setTabValue] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined

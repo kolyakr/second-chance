@@ -7,7 +7,6 @@ import {
   Avatar,
   Grid,
   Button,
-  Chip,
   CircularProgress,
 } from "@mui/material";
 import { useState } from "react";

@@ -32,7 +32,7 @@ import PostCardSkeleton from "../../shared/components/Skeletons/PostCardSkeleton
 import toast from "react-hot-toast";
 
 const PostsPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [aiSearchMode, setAiSearchMode] = useState(false);

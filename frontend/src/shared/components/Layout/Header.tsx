@@ -15,8 +15,6 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Badge,
-  Chip,
 } from "@mui/material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../../features/auth/store/authStore";
@@ -27,8 +25,6 @@ import {
   Logout,
   Menu as MenuIcon,
   AddCircle,
-  Search,
-  Close,
   ShoppingCart,
 } from "@mui/icons-material";
 import { useState } from "react";
