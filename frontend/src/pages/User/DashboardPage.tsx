@@ -112,13 +112,42 @@ const DashboardPage = () => {
                 >
                   Ваші останні оголошення
                 </Typography>
-                <Grid container spacing={{ xs: 2, sm: 2 }}>
-                  {data?.data?.recentPosts?.map((post: any) => (
-                    <Grid item xs={12} sm={6} key={post._id}>
-                      <PostCard post={post} />
-                    </Grid>
-                  ))}
-                </Grid>
+                {data?.data?.recentPosts?.length > 0 ? (
+                  <Grid container spacing={{ xs: 2, sm: 2 }}>
+                    {data.data.recentPosts.map((post: any) => (
+                      <Grid item xs={12} sm={6} key={post._id}>
+                        <PostCard post={post} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Box
+                    sx={{
+                      py: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: { xs: "0.9375rem", sm: "1rem" },
+                        mb: 1,
+                      }}
+                    >
+                      Поки що у вас немає оголошень
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                      }}
+                    >
+                      Створіть своє перше оголошення, щоб почати продавати
+                    </Typography>
+                  </Box>
+                )}
               </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
@@ -155,13 +184,32 @@ const DashboardPage = () => {
                     ))}
                   </Box>
                 ) : (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontSize: { xs: "0.8125rem", sm: "0.875rem" } }}
+                  <Box
+                    sx={{
+                      py: 4,
+                      textAlign: "center",
+                    }}
                   >
-                    Поки що немає збережених оголошень
-                  </Typography>
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: { xs: "0.9375rem", sm: "1rem" },
+                        mb: 1,
+                      }}
+                    >
+                      Поки що немає збережених оголошень
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                      }}
+                    >
+                      Зберігайте цікаві оголошення, щоб не втратити їх
+                    </Typography>
+                  </Box>
                 )}
               </Paper>
             </Grid>

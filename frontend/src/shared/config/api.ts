@@ -26,11 +26,21 @@ api.interceptors.request.use(
 // Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       // Unauthorized - clear token and redirect to login
       localStorage.removeItem("token");
       window.location.href = "/login";
+    } else if (error.response?.status === 429) {
+      // Too Many Requests - не показуємо помилку, React Query обробить retry
+      // Можна додати затримку перед наступним запитом
+      const retryAfter = error.response.headers["retry-after"];
+      if (retryAfter) {
+        // Якщо сервер вказав час очікування, чекаємо
+        await new Promise((resolve) =>
+          setTimeout(resolve, parseInt(retryAfter) * 1000)
+        );
+      }
     }
     return Promise.reject(error);
   }

@@ -69,12 +69,36 @@ app.use(
   })
 );
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+// Health check - має бути перед rate limiting
+app.get("/api/health", (_req, res) => {
+  res.json({ success: true, message: "Server is running" });
 });
-app.use("/api/", limiter);
+
+// Rate limiting - більш гнучка конфігурація
+const isDevelopment = process.env.NODE_ENV === "development";
+
+// Загальний rate limiter для всіх API (більш м'який для development)
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: isDevelopment ? 1000 : 200, // Більший ліміт для development
+  message: {
+    success: false,
+    message: "Забагато запитів з цієї IP адреси, спробуйте пізніше",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Пропускаємо помилки rate limiting для development
+  skip: (req) => {
+    // В development режимі можна пропустити rate limiting для localhost
+    if (isDevelopment && req.ip === "::1") {
+      return false; // Все одно застосовуємо, але з більшим лімітом
+    }
+    return false;
+  },
+});
+
+// Застосовуємо rate limiting до всіх API endpoints (крім health check)
+app.use("/api/", generalLimiter);
 
 // Body parser (for all other routes)
 app.use(express.json());

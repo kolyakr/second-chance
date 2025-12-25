@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: second-chance-backend
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Додайте інші змінні через Render Dashboard
+      # MongoDB, JWT, Stripe, Email тощо
+
