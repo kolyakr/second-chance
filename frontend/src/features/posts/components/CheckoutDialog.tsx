@@ -37,9 +37,6 @@ interface CheckoutDialogProps {
   post: Post;
 }
 
-// Only Ukraine is available for delivery
-const country = "Ukraine";
-
 const ukrainianRegions = [
   "Вінницька область",
   "Волинська область",

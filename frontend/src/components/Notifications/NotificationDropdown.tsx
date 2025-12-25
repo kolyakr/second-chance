@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   IconButton,
   Badge,
@@ -12,9 +12,8 @@ import {
   ListItemText,
   Button,
   Divider,
-  CircularProgress,
 } from "@mui/material";
-import { Notifications, Close } from "@mui/icons-material";
+import { Notifications } from "@mui/icons-material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   notificationService,
@@ -46,13 +45,6 @@ const NotificationDropdown = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       toast.success("Всі сповіщення позначено як прочитані");
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: notificationService.deleteNotification,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
