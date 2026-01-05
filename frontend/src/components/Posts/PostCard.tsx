@@ -7,26 +7,62 @@ import {
   Chip,
   Avatar,
   Stack,
+  IconButton,
 } from "@mui/material";
-import { Favorite, Visibility, Comment } from "@mui/icons-material";
+import { Favorite, Visibility, Comment, VisibilityOutlined, FavoriteBorder, Bookmark, BookmarkBorder } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { Post } from "../../services/postService";
+import { useAuthStore } from "../../features/auth/store/authStore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { wishlistService } from "../../services/wishlistService";
+import { getImageUrl } from "../../shared/utils/imageUtils";
+import toast from "react-hot-toast";
 
 interface PostCardProps {
   post: Post;
+  onQuickView?: (post: Post) => void;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const PostCard = ({ post, onQuickView }: PostCardProps) => {
+  const { isAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
 
-// Helper to get full image URL
-const getImageUrl = (path: string) => {
-  if (!path) return "/placeholder-image.jpg";
-  if (path.startsWith("http")) return path;
-  const baseUrl = API_URL.replace("/api", "");
-  return `${baseUrl}${path}`;
-};
+  // Check if post is in wishlist
+  const { data: wishlistCheck } = useQuery({
+    queryKey: ["wishlist-check", post._id],
+    queryFn: () => wishlistService.checkWishlist(post._id),
+    enabled: isAuthenticated,
+  });
 
-const PostCard = ({ post }: PostCardProps) => {
+  const isInWishlist = wishlistCheck?.isInWishlist || false;
+
+  const wishlistMutation = useMutation({
+    mutationFn: (postId: string) => {
+      if (isInWishlist) {
+        return wishlistService.removeFromWishlist(postId);
+      }
+      return wishlistService.addToWishlist(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishlist-check", post._id] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      toast.success(isInWishlist ? "Видалено зі списку бажань" : "Додано до списку бажань");
+    },
+    onError: () => {
+      toast.error("Не вдалося оновити список бажань");
+    },
+  });
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error("Увійдіть, щоб додати до списку бажань");
+      return;
+    }
+    wishlistMutation.mutate(post._id);
+  };
+
   return (
     <Card
       component={Link}
@@ -82,11 +118,48 @@ const PostCard = ({ post }: PostCardProps) => {
             right: 12,
             display: "flex",
             gap: 1,
+            alignItems: "center",
+            flexDirection: "column",
           }}
         >
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            {onQuickView && (
+              <IconButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onQuickView(post);
+                }}
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.95)",
+                  "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+                  p: 1,
+                }}
+                size="small"
+              >
+                <VisibilityOutlined fontSize="small" />
+              </IconButton>
+            )}
+            {isAuthenticated && (
+              <IconButton
+                onClick={handleWishlistClick}
+                disabled={wishlistMutation.isPending}
+                sx={{
+                  bgcolor: isInWishlist ? "rgba(255, 152, 0, 0.95)" : "rgba(255,255,255,0.95)",
+                  color: isInWishlist ? "white" : "inherit",
+                  "&:hover": { bgcolor: isInWishlist ? "rgba(255, 152, 0, 1)" : "rgba(255,255,255,1)" },
+                  p: 1,
+                }}
+                size="small"
+                title={isInWishlist ? "Видалити зі списку бажань" : "Додати до списку бажань"}
+              >
+                {isInWishlist ? <Bookmark fontSize="small" /> : <BookmarkBorder fontSize="small" />}
+              </IconButton>
+            )}
+          </Box>
           {post.price && (
             <Chip
-              label={`$${post.price}`}
+              label={`${post.price}₴`}
               size="small"
               sx={{
                 bgcolor: "rgba(255,255,255,0.95)",
@@ -263,3 +336,4 @@ const PostCard = ({ post }: PostCardProps) => {
 };
 
 export default PostCard;
+

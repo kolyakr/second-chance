@@ -19,6 +19,8 @@ export interface User {
     followersCount: number;
     followingCount: number;
   };
+  sellerRating?: number;
+  sellerRatingCount?: number;
   isFollowing?: boolean;
 }
 

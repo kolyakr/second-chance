@@ -7,7 +7,9 @@
     "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "seed": "ts-node src/scripts/seed.ts"
+    "seed": "ts-node src/scripts/seedClothes.ts",
+    "seed:images": "ts-node src/scripts/seedFromImages.ts",
+    "seed:internet": "ts-node src/scripts/seedFromInternetImages.ts"
   },
   "keywords": [
     "second-hand",

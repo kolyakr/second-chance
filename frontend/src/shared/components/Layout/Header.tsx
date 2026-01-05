@@ -26,9 +26,12 @@ import {
   Menu as MenuIcon,
   AddCircle,
   ShoppingCart,
+  History,
+  Favorite,
 } from "@mui/icons-material";
 import { useState } from "react";
 import NotificationDropdown from "../../../components/Notifications/NotificationDropdown";
+import logoImage from "../../../uploads/logo.png";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -62,6 +65,16 @@ const Header = () => {
   const drawer = (
     <Box sx={{ width: 280, pt: 2 }}>
       <Box sx={{ px: 2, pb: 2, display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          component="img"
+          src={logoImage}
+          alt="Second Chance Logo"
+          sx={{
+            height: 40,
+            width: "auto",
+            mr: 0.5,
+          }}
+        />
         <Typography
           variant="h6"
           sx={{
@@ -72,7 +85,7 @@ const Header = () => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          🌱 Second Chance
+          Second Chance
         </Typography>
       </Box>
       <Divider />
@@ -178,6 +191,50 @@ const Header = () => {
                   <ShoppingCart />
                 </ListItemIcon>
                 <ListItemText primary="Замовлення" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                component={Link}
+                to="/wishlist"
+                selected={isActive("/wishlist")}
+                onClick={() => setMobileOpen(false)}
+                sx={{
+                  "&.Mui-selected": {
+                    bgcolor: "primary.light",
+                    color: "primary.main",
+                    "&:hover": {
+                      bgcolor: "primary.light",
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <Favorite />
+                </ListItemIcon>
+                <ListItemText primary="Список бажань" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                component={Link}
+                to="/view-history"
+                selected={isActive("/view-history")}
+                onClick={() => setMobileOpen(false)}
+                sx={{
+                  "&.Mui-selected": {
+                    bgcolor: "primary.light",
+                    color: "primary.main",
+                    "&:hover": {
+                      bgcolor: "primary.light",
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <History />
+                </ListItemIcon>
+                <ListItemText primary="Історія перегляду" />
               </ListItemButton>
             </ListItem>
             {user?.role === "admin" && (
@@ -330,15 +387,17 @@ const Header = () => {
             }}
           >
             <Box
+              component="img"
+              src={logoImage}
+              alt="Second Chance Logo"
               className="logo-emoji"
               sx={{
-                fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
+                height: { xs: "2.5rem", sm: "3rem", md: "3.5rem" },
+                width: "auto",
                 transition: "transform 0.3s ease",
                 display: "inline-block",
               }}
-            >
-              🌱
-            </Box>
+            />
             <Box
               component="span"
               sx={{
@@ -558,6 +617,26 @@ const Header = () => {
                       sx={{ mr: 1.5, fontSize: 20, color: "primary.main" }}
                     />
                     Замовлення
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to="/wishlist"
+                    onClick={handleMenuClose}
+                  >
+                    <Favorite
+                      sx={{ mr: 1.5, fontSize: 20, color: "primary.main" }}
+                    />
+                    Список бажань
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to="/view-history"
+                    onClick={handleMenuClose}
+                  >
+                    <History
+                      sx={{ mr: 1.5, fontSize: 20, color: "primary.main" }}
+                    />
+                    Історія перегляду
                   </MenuItem>
                   {user?.role === "admin" && (
                     <MenuItem

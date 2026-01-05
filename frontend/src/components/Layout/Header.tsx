@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import { ShoppingBag, Person, Dashboard, Logout } from "@mui/icons-material";
+import { ShoppingBag, Person, Dashboard, Logout, Favorite, History } from "@mui/icons-material";
 import { useState } from "react";
 import NotificationDropdown from "../Notifications/NotificationDropdown";
+import logoImage from "../../uploads/logo.png";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -63,7 +64,16 @@ const Header = () => {
             },
           }}
         >
-          🌱{" "}
+          <Box
+            component="img"
+            src={logoImage}
+            alt="Second Chance Logo"
+            sx={{
+              height: { xs: "2.5rem", sm: "3rem", md: "3.5rem" },
+              width: "auto",
+              mr: 0.5,
+            }}
+          />
           <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
             Second Chance
           </Box>
@@ -181,6 +191,22 @@ const Header = () => {
                 >
                   <Dashboard sx={{ mr: 1, fontSize: { xs: 18, sm: 20 } }} />{" "}
                   Dashboard
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/wishlist"
+                  onClick={handleMenuClose}
+                >
+                  <Favorite sx={{ mr: 1, fontSize: { xs: 18, sm: 20 } }} />{" "}
+                  Список бажань
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/view-history"
+                  onClick={handleMenuClose}
+                >
+                  <History sx={{ mr: 1, fontSize: { xs: 18, sm: 20 } }} />{" "}
+                  Історія перегляду
                 </MenuItem>
                 {user?.role === "admin" && (
                   <MenuItem

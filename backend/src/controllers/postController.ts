@@ -2,6 +2,7 @@ import { Response } from "express";
 import { validationResult } from "express-validator";
 import Post from "../models/Post";
 import Like from "../models/Like";
+import ViewHistory from "../models/ViewHistory";
 import { AuthRequest } from "../middleware/auth";
 import { asyncHandler } from "../middleware/errorHandler";
 
@@ -120,6 +121,15 @@ export const getPost = asyncHandler(async (req: AuthRequest, res: Response) => {
   // Increment views
   post.views += 1;
   await post.save();
+
+  // Add to view history if user is authenticated
+  if (req.user) {
+    await ViewHistory.findOneAndUpdate(
+      { user: req.user._id, post: post._id },
+      { viewedAt: new Date() },
+      { upsert: true, new: true }
+    );
+  }
 
   // Check if user liked this post
   let isLiked = false;

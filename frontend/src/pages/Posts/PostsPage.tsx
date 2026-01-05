@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Container,
@@ -10,7 +10,6 @@ import {
   FormControl,
   InputLabel,
   Typography,
-  Pagination,
   Paper,
   Collapse,
   Button,
@@ -24,19 +23,25 @@ import {
   FilterList,
   AutoAwesome,
 } from "@mui/icons-material";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { postService } from "../../services/postService";
 import { geminiService } from "../../services/geminiService";
 import PostCard from "../../components/Posts/PostCard";
 import PostCardSkeleton from "../../shared/components/Skeletons/PostCardSkeleton";
+import QuickViewModal from "../../components/Posts/QuickViewModal";
+import QuickFilters from "../../components/Posts/QuickFilters";
+import SizeGridFilter from "../../components/Posts/SizeGridFilter";
 import toast from "react-hot-toast";
+import { Post } from "../../services/postService";
 
 const PostsPage = () => {
   const [searchParams] = useSearchParams();
-  const [page, setPage] = useState(1);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [aiSearchMode, setAiSearchMode] = useState(false);
   const [enhancingSearch, setEnhancingSearch] = useState(false);
+  const [quickViewPost, setQuickViewPost] = useState<Post | null>(null);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const observerTarget = useRef<HTMLDivElement>(null);
   const [filters, setFilters] = useState({
     category: searchParams.get("category") || "",
     condition: "",
@@ -60,32 +65,89 @@ const PostsPage = () => {
     }
   }, [searchParams]);
 
-  // Scroll to top when filters change
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [filters.category]);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["posts", page, filters],
-    queryFn: () => {
+  // Infinite scroll query
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: ["posts", filters],
+    queryFn: ({ pageParam = 1 }) => {
       const params: any = {
         ...filters,
-        page,
+        page: pageParam,
         limit: 12,
       };
       if (params.minPrice) params.minPrice = Number(params.minPrice);
       if (params.maxPrice) params.maxPrice = Number(params.maxPrice);
+      // Handle size filter
+      if (selectedSizes.length > 0) {
+        params.size = selectedSizes.join(",");
+      }
       // Remove empty strings
       Object.keys(params).forEach((key) => {
-        if (params[key] === "") delete params[key];
+        if (params[key] === "" || (Array.isArray(params[key]) && params[key].length === 0)) {
+          delete params[key];
+        }
       });
       return postService.getPosts(params);
     },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.pages) {
+        return lastPage.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const allPosts = data?.pages.flatMap((page) => page.data) || [];
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
+  };
+
+  const handleQuickFilter = (filter: {
+    maxPrice?: number;
+    sortBy?: string;
+    order?: string;
+  }) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...filter,
+      maxPrice: filter.maxPrice?.toString() || prev.maxPrice,
+    }));
+  };
+
+  const handleSizeToggle = (size: string) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
   };
 
   const handleAISearch = async (query: string) => {
@@ -174,7 +236,6 @@ const PostsPage = () => {
       }
 
       setFilters(newFilters);
-      setPage(1);
       toast.success("Пошук покращено за допомогою AI!");
     } catch (error: any) {
       if (error.response?.status === 429) {
@@ -207,7 +268,7 @@ const PostsPage = () => {
       size: "",
       brand: "",
     });
-    setPage(1);
+    setSelectedSizes([]);
   };
 
   const activeFiltersCount = Object.values(filters).filter(
@@ -240,6 +301,8 @@ const PostsPage = () => {
           >
             Відкрийте для себе чудові речі з секонд-хенду від нашої спільноти
           </Typography>
+
+          <QuickFilters onFilterSelect={handleQuickFilter} />
 
           <Paper
             elevation={0}
@@ -506,14 +569,12 @@ const PostsPage = () => {
                     <MenuItem value="all-season">Універсальний</MenuItem>
                   </Select>
                 </FormControl>
-                <TextField
-                  label="Розмір"
-                  value={filters.size}
-                  onChange={(e) => handleFilterChange("size", e.target.value)}
-                  size="small"
-                  placeholder="XS, S, M, L, XL..."
-                  sx={{ minWidth: { xs: "calc(50% - 8px)", sm: 120 } }}
-                />
+                <Box sx={{ width: "100%" }}>
+                  <SizeGridFilter
+                    selectedSizes={selectedSizes}
+                    onSizeToggle={handleSizeToggle}
+                  />
+                </Box>
                 <TextField
                   label="Бренд"
                   value={filters.brand}
@@ -534,7 +595,7 @@ const PostsPage = () => {
                 </Grid>
               ))}
             </Grid>
-          ) : !data?.data || data.data.length === 0 ? (
+          ) : allPosts.length === 0 ? (
             <Box
               sx={{
                 display: "flex",
@@ -570,40 +631,29 @@ const PostsPage = () => {
           ) : (
             <>
               <Grid container spacing={{ xs: 2, sm: 3 }}>
-                {data?.data?.map((post) => (
+                {allPosts.map((post) => (
                   <Grid item xs={12} sm={6} md={4} key={post._id}>
-                    <PostCard post={post} />
+                    <PostCard
+                      post={post}
+                      onQuickView={(post) => setQuickViewPost(post)}
+                    />
                   </Grid>
                 ))}
               </Grid>
-              {data && data.pages > 1 && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: { xs: 4, sm: 6 },
-                    mb: { xs: 3, sm: 4 },
-                  }}
-                >
-                  <Pagination
-                    count={data.pages}
-                    page={page}
-                    onChange={(_, value) => {
-                      setPage(value);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    color="primary"
-                    size="large"
-                    sx={{
-                      "& .MuiPaginationItem-root": {
-                        fontSize: { xs: "0.875rem", sm: "1rem" },
-                      },
-                    }}
-                  />
+              <div ref={observerTarget} style={{ height: "20px" }} />
+              {isFetchingNextPage && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                  <CircularProgress />
                 </Box>
               )}
             </>
           )}
+
+          <QuickViewModal
+            open={!!quickViewPost}
+            onClose={() => setQuickViewPost(null)}
+            post={quickViewPost}
+          />
         </Box>
       </Container>
     </Box>

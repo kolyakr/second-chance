@@ -19,6 +19,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewService, Review } from "../../services/reviewService";
 import { useAuthStore } from "../../stores/authStore";
 import { useCheckOrderExists } from "../../features/posts/hooks/useOrders";
+import { getImageUrl } from "../../shared/utils/imageUtils";
 import toast from "react-hot-toast";
 import ReviewSkeleton from "../../shared/components/Skeletons/ReviewSkeleton";
 
@@ -306,6 +307,33 @@ const ReviewsSection = ({ postId, postOwnerId }: ReviewsSectionProps) => {
                     >
                       {review.comment}
                     </Typography>
+                  )}
+                  {review.photos && review.photos.length > 0 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        mt: 1,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {review.photos.map((photo, idx) => (
+                        <Box
+                          key={idx}
+                          component="img"
+                          src={getImageUrl(photo)}
+                          alt={`Review photo ${idx + 1}`}
+                          sx={{
+                            width: 100,
+                            height: 100,
+                            objectFit: "cover",
+                            borderRadius: 1,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => window.open(getImageUrl(photo), "_blank")}
+                        />
+                      ))}
+                    </Box>
                   )}
                   <Typography
                     variant="caption"

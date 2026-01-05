@@ -11,6 +11,7 @@ export interface Review {
   postOwner: string;
   rating: number;
   comment?: string;
+  photos?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +34,7 @@ export const reviewService = {
     postId: string;
     rating: number;
     comment?: string;
+    photos?: string[];
   }): Promise<{ success: boolean; data: Review }> => {
     const response = await api.post<{ success: boolean; data: Review }>(
       "/reviews",
@@ -55,7 +57,7 @@ export const reviewService = {
 
   updateReview: async (
     id: string,
-    data: { rating?: number; comment?: string }
+    data: { rating?: number; comment?: string; photos?: string[] }
   ): Promise<{ success: boolean; data: Review }> => {
     const response = await api.put<{ success: boolean; data: Review }>(
       `/reviews/${id}`,

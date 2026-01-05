@@ -20,32 +20,32 @@ import {
   CheckCircle,
   Phone,
   Telegram,
+  Bookmark,
+  BookmarkBorder,
 } from "@mui/icons-material";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../../features/auth/store/authStore";
 import { usePost } from "../../features/posts/hooks/usePosts";
 import { useToggleLike } from "../../features/posts/hooks/useLikes";
 import { useCheckOrderExists } from "../../features/posts/hooks/useOrders";
+import { userService } from "../../services/userService";
+import { wishlistService } from "../../services/wishlistService";
+import { Star } from "@mui/icons-material";
+import toast from "react-hot-toast";
 import CommentsSection from "../../components/Posts/CommentsSection";
 import ReviewsSection from "../../components/Posts/ReviewsSection";
+import QuestionsSection from "../../components/Posts/QuestionsSection";
+import ShareDialog from "../../components/Posts/ShareDialog";
 import { CheckoutDialog } from "../../features/posts/components/CheckoutDialog";
 import PostDetailSkeleton from "../../shared/components/Skeletons/PostDetailSkeleton";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-// Helper to get full image URL
-const getImageUrl = (path: string) => {
-  if (!path) return "/placeholder-image.jpg";
-  if (path.startsWith("http")) return path;
-  const baseUrl = API_URL.replace("/api", "");
-  return `${baseUrl}${path}`;
-};
+import { getImageUrl } from "../../shared/utils/imageUtils";
 
 const PostDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = usePost(id);
@@ -55,6 +55,42 @@ const PostDetailPage = () => {
   const { data: orderCheck } = useCheckOrderExists(post?._id);
   const hasOrder = orderCheck?.hasOrder || false;
   const existingOrder = orderCheck?.order;
+
+  // Get seller profile for rating
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["seller-profile", post?.user._id],
+    queryFn: () => userService.getUserProfile(post!.user._id),
+    enabled: !!post?.user._id,
+  });
+
+  const sellerRating = sellerProfile?.data?.sellerRating;
+  const sellerRatingCount = sellerProfile?.data?.sellerRatingCount;
+
+  // Check wishlist
+  const { data: wishlistCheck } = useQuery({
+    queryKey: ["wishlist-check", post?._id],
+    queryFn: () => wishlistService.checkWishlist(post!._id),
+    enabled: isAuthenticated && !!post?._id,
+  });
+
+  const isInWishlist = wishlistCheck?.isInWishlist || false;
+
+  const wishlistMutation = useMutation({
+    mutationFn: (postId: string) => {
+      if (isInWishlist) {
+        return wishlistService.removeFromWishlist(postId);
+      }
+      return wishlistService.addToWishlist(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishlist-check", post?._id] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      toast.success(isInWishlist ? "Видалено зі списку бажань" : "Додано до списку бажань");
+    },
+    onError: () => {
+      toast.error("Не вдалося оновити список бажань");
+    },
+  });
 
   if (isLoading) {
     return <PostDetailSkeleton />;
@@ -318,14 +354,46 @@ const PostDetailPage = () => {
                     ? "вподобання"
                     : "вподобань"}
                 </Typography>
-                <IconButton sx={{ p: { xs: 0.75, sm: 1 } }}>
+                <IconButton
+                  onClick={() => setShareOpen(true)}
+                  sx={{ p: { xs: 0.75, sm: 1 } }}
+                >
                   <Share sx={{ fontSize: { xs: 20, sm: 24 } }} />
                 </IconButton>
+                {isAuthenticated && (
+                  <IconButton
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        toast.error("Увійдіть, щоб додати до списку бажань");
+                        return;
+                      }
+                      wishlistMutation.mutate(post._id);
+                    }}
+                    disabled={wishlistMutation.isPending}
+                    sx={{
+                      p: { xs: 0.75, sm: 1 },
+                      color: isInWishlist ? "warning.main" : "text.secondary",
+                      "&:hover": {
+                        bgcolor: "warning.light",
+                      },
+                    }}
+                    title={isInWishlist ? "Видалити зі списку бажань" : "Додати до списку бажань"}
+                  >
+                    {isInWishlist ? (
+                      <Bookmark sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                    ) : (
+                      <BookmarkBorder sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                    )}
+                  </IconButton>
+                )}
               </Box>
             </Paper>
 
             <Box sx={{ mb: { xs: 3, sm: 4 } }}>
               <CommentsSection postId={post._id} />
+            </Box>
+            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+              <QuestionsSection postId={post._id} postOwnerId={post.user._id} />
             </Box>
             <ReviewsSection postId={post._id} postOwnerId={post.user._id} />
           </Grid>
@@ -380,6 +448,18 @@ const PostDetailPage = () => {
                     >
                       {post.user.firstName} {post.user.lastName}
                     </Typography>
+                  )}
+                  {(sellerRating !== undefined || sellerRatingCount !== undefined) && (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
+                      <Star sx={{ fontSize: 16, color: "warning.main" }} />
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontSize: { xs: "0.75rem", sm: "0.8125rem" } }}
+                      >
+                        {sellerRating ? sellerRating.toFixed(1) : "0.0"} ({sellerRatingCount || 0})
+                      </Typography>
+                    </Box>
                   )}
                 </Box>
               </Box>
@@ -554,11 +634,19 @@ const PostDetailPage = () => {
       </Box>
 
       {post && (
-        <CheckoutDialog
-          open={checkoutOpen}
-          onClose={() => setCheckoutOpen(false)}
-          post={post}
-        />
+        <>
+          <CheckoutDialog
+            open={checkoutOpen}
+            onClose={() => setCheckoutOpen(false)}
+            post={post}
+          />
+          <ShareDialog
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+            postTitle={post.title}
+            postId={post._id}
+          />
+        </>
       )}
     </Container>
   );

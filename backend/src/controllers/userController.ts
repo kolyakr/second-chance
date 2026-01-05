@@ -50,6 +50,8 @@ export const getUserProfile = asyncHandler(
           followersCount,
           followingCount,
         },
+        sellerRating: user.sellerRating || 0,
+        sellerRatingCount: user.sellerRatingCount || 0,
         isFollowing,
       },
     });

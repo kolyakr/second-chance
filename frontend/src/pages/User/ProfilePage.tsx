@@ -209,6 +209,23 @@ const ProfilePage = () => {
                         Підписок
                       </Typography>
                     </Box>
+                    {(user.sellerRating !== undefined || user.sellerRatingCount !== undefined) && (
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }}
+                        >
+                          {user.sellerRating ? user.sellerRating.toFixed(1) : "0.0"} ⭐
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                        >
+                          Рейтинг ({user.sellerRatingCount || 0})
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                 )}
               </Box>

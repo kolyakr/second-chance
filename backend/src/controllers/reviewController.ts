@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import Review from "../models/Review";
 import Post from "../models/Post";
 import Order from "../models/Order";
+import User from "../models/User";
 import Notification from "../models/Notification";
 import { AuthRequest } from "../middleware/auth";
 import { asyncHandler } from "../middleware/errorHandler";
@@ -18,7 +19,7 @@ export const createReview = asyncHandler(
       return;
     }
 
-    const { postId, rating, comment } = req.body;
+    const { postId, rating, comment, photos } = req.body;
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -69,6 +70,19 @@ export const createReview = asyncHandler(
       postOwner: post.user,
       rating,
       comment,
+      photos: photos || [],
+    });
+
+    // Update seller rating
+    const sellerReviews = await Review.find({ postOwner: post.user });
+    const avgRating =
+      sellerReviews.length > 0
+        ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / sellerReviews.length
+        : 0;
+
+    await User.findByIdAndUpdate(post.user, {
+      sellerRating: avgRating,
+      sellerRatingCount: sellerReviews.length,
     });
 
     // Create notification
@@ -156,7 +170,22 @@ export const updateReview = asyncHandler(
 
     review.rating = req.body.rating || review.rating;
     review.comment = req.body.comment || review.comment;
+    if (req.body.photos !== undefined) {
+      review.photos = req.body.photos || [];
+    }
     await review.save();
+
+    // Update seller rating
+    const sellerReviews = await Review.find({ postOwner: review.postOwner });
+    const avgRating =
+      sellerReviews.length > 0
+        ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / sellerReviews.length
+        : 0;
+
+    await User.findByIdAndUpdate(review.postOwner, {
+      sellerRating: avgRating,
+      sellerRatingCount: sellerReviews.length,
+    });
 
     res.json({
       success: true,
@@ -188,7 +217,20 @@ export const deleteReview = asyncHandler(
       return;
     }
 
+    const postOwnerId = review.postOwner;
     await review.deleteOne();
+
+    // Update seller rating
+    const sellerReviews = await Review.find({ postOwner: postOwnerId });
+    const avgRating =
+      sellerReviews.length > 0
+        ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / sellerReviews.length
+        : 0;
+
+    await User.findByIdAndUpdate(postOwnerId, {
+      sellerRating: avgRating,
+      sellerRatingCount: sellerReviews.length,
+    });
 
     res.json({
       success: true,

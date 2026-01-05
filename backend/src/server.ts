@@ -23,6 +23,11 @@ import uploadRoutes from "./routes/uploadRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import geminiRoutes from "./routes/geminiRoutes";
+import wishlistRoutes from "./routes/wishlistRoutes";
+import savedSearchRoutes from "./routes/savedSearchRoutes";
+import productComparisonRoutes from "./routes/productComparisonRoutes";
+import viewHistoryRoutes from "./routes/viewHistoryRoutes";
+import questionRoutes from "./routes/questionRoutes";
 
 // Load env vars
 dotenv.config();
@@ -149,6 +154,11 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/gemini", geminiRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/saved-searches", savedSearchRoutes);
+app.use("/api/comparison", productComparisonRoutes);
+app.use("/api/view-history", viewHistoryRoutes);
+app.use("/api/questions", questionRoutes);
 
 // Health check
 app.get("/api/health", (_req, res) => {

@@ -19,7 +19,8 @@ import CreatePostPage from "./pages/Posts/CreatePostPage";
 import ProfilePage from "./pages/User/ProfilePage";
 import DashboardPage from "./pages/User/DashboardPage";
 import OrdersPage from "./pages/User/OrdersPage";
-
+import WishlistPage from "./pages/User/WishlistPage";
+import ViewHistoryPage from "./pages/User/ViewHistoryPage";
 
 // Admin page - TODO: Move to features/admin/pages
 import AdminPage from "./pages/Admin/AdminPage";
@@ -93,6 +94,26 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <OrdersPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wishlist"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <WishlistPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/view-history"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ViewHistoryPage />
             </Layout>
           </ProtectedRoute>
         }

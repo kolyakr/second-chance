@@ -150,69 +150,6 @@ const DashboardPage = () => {
                 )}
               </Paper>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: { xs: 2, sm: 3 },
-                  borderRadius: 3,
-                  border: "1px solid",
-                  borderColor: "divider",
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                    mb: { xs: 2, sm: 2.5 },
-                  }}
-                >
-                  Збережені оголошення
-                </Typography>
-                {data?.data?.savedPosts?.length > 0 ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: { xs: 1.5, sm: 2 },
-                    }}
-                  >
-                    {data?.data?.savedPosts?.slice(0, 5).map((post: any) => (
-                      <PostCard key={post._id} post={post} />
-                    ))}
-                  </Box>
-                ) : (
-                  <Box
-                    sx={{
-                      py: 4,
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      sx={{
-                        fontSize: { xs: "0.9375rem", sm: "1rem" },
-                        mb: 1,
-                      }}
-                    >
-                      Поки що немає збережених оголошень
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        fontSize: { xs: "0.8125rem", sm: "0.875rem" },
-                      }}
-                    >
-                      Зберігайте цікаві оголошення, щоб не втратити їх
-                    </Typography>
-                  </Box>
-                )}
-              </Paper>
-            </Grid>
           </Grid>
         </Box>
       </Container>

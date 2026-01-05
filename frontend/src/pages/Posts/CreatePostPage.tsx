@@ -24,15 +24,7 @@ import { uploadService } from "../../services/uploadService";
 import { geminiService } from "../../services/geminiService";
 import toast from "react-hot-toast";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-// Helper to get full image URL
-const getImageUrl = (path: string) => {
-  if (path.startsWith("http")) return path;
-  // Remove /api from API_URL if present, then append path
-  const baseUrl = API_URL.replace("/api", "");
-  return `${baseUrl}${path}`;
-};
+import { getImageUrl } from "../../shared/utils/imageUtils";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Назва обов'язкова").max(100),

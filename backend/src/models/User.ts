@@ -20,6 +20,8 @@ export interface IUser extends Document {
   followers: mongoose.Types.ObjectId[];
   following: mongoose.Types.ObjectId[];
   savedPosts: mongoose.Types.ObjectId[];
+  sellerRating?: number; // Average rating as seller
+  sellerRatingCount?: number; // Number of ratings received
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -116,6 +118,16 @@ const UserSchema = new Schema<IUser>(
         ref: "Post",
       },
     ],
+    sellerRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    sellerRatingCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

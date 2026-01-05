@@ -1,6 +1,7 @@
 import { Box, Container, Typography, Button } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import logoImage from "../../../uploads/logo.png";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -54,15 +55,28 @@ export const HeroSection = () => {
         >
           <Box
             sx={{
-              display: "inline-block",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               mb: 2,
-              animation: "bounce 2s ease-in-out infinite",
-              "@keyframes bounce": {
-                "0%, 100%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-10px)" },
-              },
+              gap: 2,
             }}
           >
+            <Box
+              component="img"
+              src={logoImage}
+              alt="Second Chance Logo"
+              sx={{
+                height: { xs: "120px", sm: "160px", md: "200px", lg: "240px" },
+                width: "auto",
+                animation: "bounce 2s ease-in-out infinite",
+                filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.3))",
+                "@keyframes bounce": {
+                  "0%, 100%": { transform: "translateY(0)" },
+                  "50%": { transform: "translateY(-10px)" },
+                },
+              }}
+            />
             <Typography
               variant="h1"
               component="h1"
@@ -83,7 +97,7 @@ export const HeroSection = () => {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              🌱 Second Chance
+              Second Chance
             </Typography>
           </Box>
           <Typography
