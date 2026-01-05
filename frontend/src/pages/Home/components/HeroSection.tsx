@@ -1,7 +1,7 @@
 import { Box, Container, Typography, Button } from "@mui/material";
 import { ArrowForward } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import logoImage from "../../../uploads/logo.png";
+import logoImage from "@/uploads/logo.png";
 
 export const HeroSection = () => {
   const navigate = useNavigate();

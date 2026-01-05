@@ -31,7 +31,7 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import NotificationDropdown from "../../../components/Notifications/NotificationDropdown";
-import logoImage from "../../../uploads/logo.png";
+import logoImage from "@/uploads/logo.png";
 
 const Header = () => {
   const navigate = useNavigate();

@@ -14,7 +14,7 @@ import { useAuthStore } from "../../stores/authStore";
 import { ShoppingBag, Person, Dashboard, Logout, Favorite, History } from "@mui/icons-material";
 import { useState } from "react";
 import NotificationDropdown from "../Notifications/NotificationDropdown";
-import logoImage from "../../uploads/logo.png";
+import logoImage from "@/uploads/logo.png";
 
 const Header = () => {
   const navigate = useNavigate();
