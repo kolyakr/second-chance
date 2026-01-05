@@ -60,9 +60,9 @@ const ShareDialog = ({ open, onClose, postTitle, postId }: ShareDialogProps) => 
         <TextField
           fullWidth
           value={shareUrl}
-          readOnly
           sx={{ mb: 3 }}
           InputProps={{
+            readOnly: true,
             endAdornment: (
               <IconButton onClick={handleCopy} color={copied ? "primary" : "default"}>
                 <ContentCopy />

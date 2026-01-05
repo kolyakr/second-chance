@@ -61,7 +61,7 @@ const PostsPage = () => {
     const categoryParam = searchParams.get("category");
     if (categoryParam) {
       setFilters((prev) => ({ ...prev, category: categoryParam }));
-      setPage(1);
+      // Reset filters will trigger query refetch automatically
     }
   }, [searchParams]);
 

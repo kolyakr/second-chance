@@ -29,7 +29,7 @@ import { usePost } from "../../features/posts/hooks/usePosts";
 import { useToggleLike } from "../../features/posts/hooks/useLikes";
 import { useCheckOrderExists } from "../../features/posts/hooks/useOrders";
 import { userService } from "../../services/userService";
-import { wishlistService } from "../../services/wishlistService";
+import { wishlistService, WishlistItem } from "../../services/wishlistService";
 import { Star } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import CommentsSection from "../../components/Posts/CommentsSection";
@@ -75,12 +75,18 @@ const PostDetailPage = () => {
 
   const isInWishlist = wishlistCheck?.isInWishlist || false;
 
-  const wishlistMutation = useMutation({
-    mutationFn: (postId: string) => {
+  const wishlistMutation = useMutation<
+    { success: boolean; data?: WishlistItem; message?: string },
+    Error,
+    string
+  >({
+    mutationFn: async (postId: string) => {
       if (isInWishlist) {
-        return wishlistService.removeFromWishlist(postId);
+        const result = await wishlistService.removeFromWishlist(postId);
+        return { success: result.success, message: result.message };
       }
-      return wishlistService.addToWishlist(postId);
+      const result = await wishlistService.addToWishlist(postId);
+      return { success: result.success, data: result.data };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist-check", post?._id] });

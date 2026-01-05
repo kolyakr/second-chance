@@ -21,7 +21,7 @@ import {
 import { Post } from "../../services/postService";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../features/auth/store/authStore";
-import { wishlistService } from "../../services/wishlistService";
+import { wishlistService, WishlistItem } from "../../services/wishlistService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../shared/utils/imageUtils";
 import toast from "react-hot-toast";
@@ -46,12 +46,18 @@ const QuickViewModal = ({ open, onClose, post }: QuickViewModalProps) => {
 
   const isInWishlist = wishlistCheck?.isInWishlist || false;
 
-  const wishlistMutation = useMutation({
-    mutationFn: (postId: string) => {
+  const wishlistMutation = useMutation<
+    { success: boolean; data?: WishlistItem; message?: string },
+    Error,
+    string
+  >({
+    mutationFn: async (postId: string) => {
       if (isInWishlist) {
-        return wishlistService.removeFromWishlist(postId);
+        const result = await wishlistService.removeFromWishlist(postId);
+        return { success: result.success, message: result.message };
       }
-      return wishlistService.addToWishlist(postId);
+      const result = await wishlistService.addToWishlist(postId);
+      return { success: result.success, data: result.data };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist-check", post?._id] });
