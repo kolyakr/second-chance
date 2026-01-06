@@ -320,6 +320,8 @@ const Header = () => {
           boxShadow: "0px 4px 30px rgba(46, 125, 50, 0.3)",
           borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
           position: "relative",
+          animation: "fadeInDown 0.6s ease-out",
+          transition: "all 0.3s ease",
           "&::before": {
             content: '""',
             position: "absolute",
@@ -331,6 +333,7 @@ const Header = () => {
               'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
             opacity: 0.5,
             pointerEvents: "none",
+            animation: "float 20s ease-in-out infinite",
           },
         }}
       >
@@ -554,18 +557,22 @@ const Header = () => {
                   transformOrigin={{ vertical: "top", horizontal: "right" }}
                   PaperProps={{
                     sx: {
-                      minWidth: 220,
+                      minWidth: 240,
                       mt: 1.5,
-                      borderRadius: 2,
-                      boxShadow: "0px 8px 32px rgba(0,0,0,0.15)",
-                      border: "1px solid rgba(0,0,0,0.05)",
+                      borderRadius: 3,
+                      boxShadow: "0px 16px 40px rgba(0,0,0,0.25)",
+                      border: "1px solid rgba(255,255,255,0.15)",
                       overflow: "hidden",
+                      bgcolor: "background.paper",
+                      backdropFilter: "blur(20px)",
+                      animation: "fadeInUp 0.25s ease-out",
                       "& .MuiMenuItem-root": {
-                        px: 2,
-                        py: 1.5,
+                        px: 2.25,
+                        py: 1.4,
                         transition: "all 0.2s ease",
+                        fontSize: "0.9rem",
                         "&:hover": {
-                          bgcolor: "grey.100",
+                          bgcolor: "rgba(255, 255, 255, 0.1)",
                           color: "text.primary",
                         },
                       },
@@ -579,6 +586,9 @@ const Header = () => {
                       bgcolor: "grey.50",
                       borderBottom: "1px solid",
                       borderColor: "divider",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.25,
                     }}
                   >
                     <Typography variant="subtitle2" fontWeight={600}>
@@ -651,7 +661,23 @@ const Header = () => {
                     </MenuItem>
                   )}
                   <Divider />
-                  <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
+                  <MenuItem
+                    onClick={handleLogout}
+                    sx={{
+                      mt: 0.5,
+                      borderTop: "1px solid",
+                      borderColor: "divider",
+                      color: "error.main",
+                      fontWeight: 600,
+                      "& svg": {
+                        color: "error.main",
+                      },
+                      "&:hover": {
+                        bgcolor: "error.light",
+                        color: "error.dark",
+                      },
+                    }}
+                  >
                     <Logout sx={{ mr: 1.5, fontSize: 20 }} />
                     Вийти
                   </MenuItem>

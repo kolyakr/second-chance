@@ -42,7 +42,9 @@ const LoginPage = () => {
         display: "flex",
         alignItems: "center",
         background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-        py: 8,
+        py: { xs: 4, sm: 8 },
+        px: { xs: 2, sm: 0 },
+        animation: "fadeIn 0.5s ease-out",
       }}
     >
       <Container maxWidth="sm">
@@ -52,6 +54,11 @@ const LoginPage = () => {
             p: { xs: 3, sm: 5 },
             borderRadius: 4,
             boxShadow: "0px 8px 40px rgba(0,0,0,0.12)",
+            animation: "scaleIn 0.5s ease-out",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              boxShadow: "0px 12px 48px rgba(46, 125, 50, 0.15)",
+            },
           }}
         >
           <Box sx={{ textAlign: "center", mb: 4 }}>

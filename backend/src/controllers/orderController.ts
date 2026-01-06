@@ -236,11 +236,14 @@ export const updateOrderStatus = asyncHandler(
       return;
     }
 
-    // Only seller can update status
-    if (order.seller.toString() !== req.user!._id.toString()) {
+    // Only seller or admin can update status
+    const isSeller = order.seller.toString() === req.user!._id.toString();
+    const isAdmin = req.user!.role === "admin";
+
+    if (!isSeller && !isAdmin) {
       res.status(403).json({
         success: false,
-        message: "Тільки продавець може оновлювати статус замовлення",
+        message: "Тільки продавець або адміністратор може оновлювати статус замовлення",
       });
       return;
     }

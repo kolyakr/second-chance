@@ -46,6 +46,7 @@ const PostDetailPage = () => {
   const { isAuthenticated, user } = useAuthStore();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [likeAnimation, setLikeAnimation] = useState(false);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = usePost(id);
@@ -104,14 +105,35 @@ const PostDetailPage = () => {
 
   if (!post) {
     return (
-      <Container maxWidth="lg">
-        <Typography>Оголошення не знайдено</Typography>
+      <Container
+        maxWidth="lg"
+        sx={{
+          animation: "fadeIn 0.5s ease-out",
+          py: { xs: 3, sm: 4 },
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            textAlign: "center",
+            color: "text.secondary",
+            animation: "fadeInUp 0.6s ease-out",
+          }}
+        >
+          Оголошення не знайдено
+        </Typography>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
+    <Container
+      maxWidth="lg"
+      sx={{
+        px: { xs: 2, sm: 3 },
+        animation: "fadeIn 0.5s ease-out",
+      }}
+    >
       <Box sx={{ my: { xs: 2, sm: 3, md: 4 } }}>
         <Button
           startIcon={<ArrowBack />}
@@ -120,8 +142,10 @@ const PostDetailPage = () => {
             mb: { xs: 2, sm: 3 },
             color: "text.secondary",
             fontSize: { xs: "0.875rem", sm: "1rem" },
+            transition: "all 0.2s ease",
             "&:hover": {
               bgcolor: "action.hover",
+              transform: "translateX(-4px)",
             },
           }}
         >
@@ -138,6 +162,11 @@ const PostDetailPage = () => {
                 borderRadius: 3,
                 border: "1px solid",
                 borderColor: "divider",
+                animation: "fadeInUp 0.6s ease-out",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  boxShadow: "0px 8px 32px rgba(46, 125, 50, 0.1)",
+                },
               }}
             >
               <Box
@@ -312,6 +341,8 @@ const PostDetailPage = () => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (isAuthenticated) {
+                      setLikeAnimation(true);
+                      setTimeout(() => setLikeAnimation(false), 600);
                       likeMutation.mutate(post._id, {
                         onSuccess: () => {
                           queryClient.invalidateQueries({
@@ -325,9 +356,31 @@ const PostDetailPage = () => {
                   sx={{
                     p: { xs: 0.75, sm: 1 },
                     color: post.isLiked ? "error.main" : "text.secondary",
-                    "&:hover": {
-                      bgcolor: "error.light",
-                    },
+                    position: "relative",
+                    "&::after": likeAnimation ? {
+                      content: '""',
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      width: 0,
+                      height: 0,
+                      borderRadius: "50%",
+                      background: "radial-gradient(circle, rgba(211,47,47,0.8) 0%, transparent 70%)",
+                      transform: "translate(-50%, -50%)",
+                      animation: "spark 0.6s ease-out",
+                      "@keyframes spark": {
+                        "0%": {
+                          width: 0,
+                          height: 0,
+                          opacity: 1,
+                        },
+                        "100%": {
+                          width: 100,
+                          height: 100,
+                          opacity: 0,
+                        },
+                      },
+                    } : {},
                   }}
                 >
                   {post.isLiked ? (

@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import Header from "./Header";
 import Footer from "./Footer";
+import { AdBanner } from "../AdBanner";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,6 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </Box>
       <Footer />
+      <AdBanner position="right" />
     </Box>
   );
 };

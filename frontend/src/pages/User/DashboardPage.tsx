@@ -90,7 +90,7 @@ const DashboardPage = () => {
           </Typography>
 
           <Grid container spacing={{ xs: 2, sm: 3 }}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12}>
               <Paper
                 elevation={0}
                 sx={{
@@ -115,7 +115,7 @@ const DashboardPage = () => {
                 {data?.data?.recentPosts && data.data.recentPosts.length > 0 ? (
                   <Grid container spacing={{ xs: 2, sm: 2 }}>
                     {data.data?.recentPosts?.map((post: any) => (
-                      <Grid item xs={12} sm={6} key={post._id}>
+                      <Grid item xs={12} sm={6} md={4} lg={3} key={post._id}>
                         <PostCard post={post} />
                       </Grid>
                     ))}

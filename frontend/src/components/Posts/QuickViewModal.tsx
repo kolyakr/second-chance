@@ -94,7 +94,12 @@ const QuickViewModal = ({ open, onClose, post }: QuickViewModalProps) => {
         sx: {
           borderRadius: 3,
           maxHeight: "90vh",
+          animation: "scaleIn 0.3s ease-out",
+          transition: "all 0.3s ease",
         },
+      }}
+      TransitionProps={{
+        timeout: 300,
       }}
     >
       <DialogContent sx={{ p: 0, position: "relative" }}>

@@ -40,6 +40,18 @@ export const ordersApi = {
     return response.data;
   },
 
+  updateOrderStatus: async (
+    orderId: string,
+    status: Order["status"]
+  ): Promise<{ success: boolean; data: Order; message: string }> => {
+    const response = await api.put<{
+      success: boolean;
+      data: Order;
+      message: string;
+    }>(`/orders/${orderId}/status`, { status });
+    return response.data;
+  },
+
   checkOrderExists: async (
     postId: string
   ): Promise<{

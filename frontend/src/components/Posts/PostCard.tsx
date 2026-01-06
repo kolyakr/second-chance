@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Card,
   CardMedia,
@@ -26,6 +27,7 @@ interface PostCardProps {
 const PostCard = ({ post, onQuickView }: PostCardProps) => {
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
+  const [wishlistAnimation, setWishlistAnimation] = useState(false);
 
   // Check if post is in wishlist
   const { data: wishlistCheck } = useQuery({
@@ -66,6 +68,8 @@ const PostCard = ({ post, onQuickView }: PostCardProps) => {
       toast.error("Увійдіть, щоб додати до списку бажань");
       return;
     }
+    setWishlistAnimation(true);
+    setTimeout(() => setWishlistAnimation(false), 600);
     wishlistMutation.mutate(post._id);
   };
 
@@ -81,12 +85,14 @@ const PostCard = ({ post, onQuickView }: PostCardProps) => {
         flexDirection: "column",
         overflow: "hidden",
         position: "relative",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        borderRadius: 3,
+        animation: "fadeInUp 0.5s ease-out",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-          transform: "translateY(-8px)",
-          boxShadow: "0px 12px 40px rgba(0,0,0,0.15)",
+          transform: "translateY(-12px) scale(1.02)",
+          boxShadow: "0px 16px 48px rgba(46, 125, 50, 0.2)",
           "& .post-image": {
-            transform: "scale(1.05)",
+            transform: "scale(1.1)",
           },
         },
       }}
@@ -153,8 +159,32 @@ const PostCard = ({ post, onQuickView }: PostCardProps) => {
                 sx={{
                   bgcolor: isInWishlist ? "rgba(255, 152, 0, 0.95)" : "rgba(255,255,255,0.95)",
                   color: isInWishlist ? "white" : "inherit",
-                  "&:hover": { bgcolor: isInWishlist ? "rgba(255, 152, 0, 1)" : "rgba(255,255,255,1)" },
                   p: 1,
+                  position: "relative",
+                  "&::after": wishlistAnimation ? {
+                    content: '""',
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    width: 0,
+                    height: 0,
+                    borderRadius: "50%",
+                    background: "radial-gradient(circle, rgba(255,152,0,0.8) 0%, transparent 70%)",
+                    transform: "translate(-50%, -50%)",
+                    animation: "spark 0.6s ease-out",
+                    "@keyframes spark": {
+                      "0%": {
+                        width: 0,
+                        height: 0,
+                        opacity: 1,
+                      },
+                      "100%": {
+                        width: 60,
+                        height: 60,
+                        opacity: 0,
+                      },
+                    },
+                  } : {},
                 }}
                 size="small"
                 title={isInWishlist ? "Видалити зі списку бажань" : "Додати до списку бажань"}

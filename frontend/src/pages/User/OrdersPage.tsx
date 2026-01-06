@@ -12,6 +12,8 @@ import {
   Avatar,
   Divider,
   Alert,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import {
   LocalShipping,
@@ -24,6 +26,11 @@ import {
   useMyOrders,
   useSellerOrders,
 } from "../../features/posts/hooks/useOrders";
+import { ordersApi } from "../../features/posts/api/ordersApi";
+import type { Order } from "../../features/posts/api/paymentsApi";
+import { useAuthStore } from "../../features/auth/store/authStore";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { DeliveryProgress } from "../../components/Orders/DeliveryProgress";
 import { format } from "date-fns";
 import OrderCardSkeleton from "../../shared/components/Skeletons/OrderCardSkeleton";
@@ -55,6 +62,24 @@ const OrdersPage = () => {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined
   );
+
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ orderId, status }: { orderId: string; status: Order["status"] }) =>
+      ordersApi.updateOrderStatus(orderId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["seller-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+      toast.success("Статус замовлення оновлено");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Не вдалося оновити статус замовлення"
+      );
+    },
+  });
 
   const { data: myOrdersData, isLoading: myOrdersLoading } = useMyOrders({
     status: statusFilter,
@@ -108,6 +133,26 @@ const OrdersPage = () => {
 
   const orders = tabValue === 0 ? myOrdersData?.data : sellerOrdersData?.data;
   const isLoading = tabValue === 0 ? myOrdersLoading : sellerOrdersLoading;
+
+  const canManageStatus = !!user && (user.role === "admin" || tabValue === 1);
+
+  const getNextAllowedStatuses = (status: Order["status"]): Order["status"][] => {
+    switch (status) {
+      case "pending":
+        return ["confirmed", "cancelled"];
+      case "confirmed":
+        return ["shipped", "cancelled"];
+      case "shipped":
+        return ["delivered"];
+      default:
+        return [];
+    }
+  };
+
+  const handleStatusChange = (orderId: string, currentStatus: Order["status"], newStatus: Order["status"]) => {
+    if (newStatus === currentStatus) return;
+    updateStatusMutation.mutate({ orderId, status: newStatus });
+  };
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -326,15 +371,25 @@ const OrdersPage = () => {
                                   <Chip
                                     icon={getStatusIcon(order.status)}
                                     label={
-                                      order.status.charAt(0).toUpperCase() +
-                                      order.status.slice(1)
+                                      order.status === "confirmed"
+                                        ? "Підтверджено"
+                                        : order.status === "pending"
+                                        ? "В очікуванні"
+                                        : order.status === "shipped"
+                                        ? "Відправлено"
+                                        : order.status === "delivered"
+                                        ? "Доставлено"
+                                        : order.status === "cancelled"
+                                        ? "Скасовано"
+                                        : order.status.charAt(0).toUpperCase() +
+                                          order.status.slice(1)
                                     }
                                     color={getStatusColor(order.status) as any}
                                     sx={{ fontWeight: 600, minHeight: 32 }}
                                   />
                                   {order.paymentStatus === "paid" && (
                                     <Chip
-                                      label="Paid"
+                                      label="Сплачено"
                                       color="success"
                                       sx={{ fontWeight: 600, minHeight: 32 }}
                                     />
@@ -491,19 +546,79 @@ const OrdersPage = () => {
                                   <Chip
                                     icon={getStatusIcon(order.status)}
                                     label={
-                                      order.status.charAt(0).toUpperCase() +
-                                      order.status.slice(1)
+                                      order.status === "confirmed"
+                                        ? "Підтверджено"
+                                        : order.status === "pending"
+                                        ? "В очікуванні"
+                                        : order.status === "shipped"
+                                        ? "Відправлено"
+                                        : order.status === "delivered"
+                                        ? "Доставлено"
+                                        : order.status === "cancelled"
+                                        ? "Скасовано"
+                                        : order.status.charAt(0).toUpperCase() +
+                                          order.status.slice(1)
                                     }
                                     color={getStatusColor(order.status) as any}
                                     sx={{ fontWeight: 600, minHeight: 32 }}
                                   />
                                   {order.paymentStatus === "paid" && (
                                     <Chip
-                                      label="Paid"
+                                      label="Сплачено"
                                       color="success"
                                       sx={{ fontWeight: 600, minHeight: 32 }}
                                     />
                                   )}
+                                  {canManageStatus &&
+                                    getNextAllowedStatuses(order.status).length >
+                                      0 && (
+                                      <Select
+                                        size="small"
+                                        value={order.status}
+                                        onChange={(e) =>
+                                          handleStatusChange(
+                                            order._id,
+                                            order.status,
+                                            e.target.value as Order["status"]
+                                          )
+                                        }
+                                        sx={{
+                                          mt: 1,
+                                          fontSize: "0.8rem",
+                                        }}
+                                        disabled={updateStatusMutation.isPending}
+                                      >
+                                        <MenuItem value={order.status}>
+                                          Поточний:{" "}
+                                          {order.status === "confirmed"
+                                            ? "Підтверджено"
+                                            : order.status === "pending"
+                                            ? "В очікуванні"
+                                            : order.status === "shipped"
+                                            ? "Відправлено"
+                                            : order.status === "delivered"
+                                            ? "Доставлено"
+                                            : order.status === "cancelled"
+                                            ? "Скасовано"
+                                            : order.status}
+                                        </MenuItem>
+                                        {getNextAllowedStatuses(order.status).map(
+                                          (status) => (
+                                            <MenuItem key={status} value={status}>
+                                              {status === "confirmed"
+                                                ? "Підтвердити"
+                                                : status === "shipped"
+                                                ? "Позначити як відправлено"
+                                                : status === "delivered"
+                                                ? "Позначити як доставлено"
+                                                : status === "cancelled"
+                                                ? "Скасувати замовлення"
+                                                : status}
+                                            </MenuItem>
+                                          )
+                                        )}
+                                      </Select>
+                                    )}
                                 </Box>
                               </Grid>
                             </Grid>

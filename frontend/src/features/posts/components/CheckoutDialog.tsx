@@ -311,7 +311,12 @@ export const CheckoutDialog = ({
       PaperProps={{
         sx: {
           borderRadius: 3,
+          animation: "scaleIn 0.3s ease-out",
+          transition: "all 0.3s ease",
         },
+      }}
+      TransitionProps={{
+        timeout: 300,
       }}
     >
       <DialogTitle>

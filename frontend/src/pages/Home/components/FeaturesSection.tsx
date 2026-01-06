@@ -72,13 +72,20 @@ export const FeaturesSection = () => {
         }}
       >
         <Chip
-            label="Чому обирають нас"
+          label="Чому обирають нас"
           sx={{
             mb: 2,
-            bgcolor: "primary.light",
-            color: "primary.black",
+            bgcolor: "primary.main",
+            color: "white",
             fontWeight: 600,
-            px: 1,
+            px: 2,
+            py: 0.5,
+            fontSize: { xs: "0.875rem", sm: "0.9375rem" },
+            boxShadow: "0px 2px 8px rgba(46, 125, 50, 0.3)",
+            "&:hover": {
+              bgcolor: "primary.dark",
+              boxShadow: "0px 4px 12px rgba(46, 125, 50, 0.4)",
+            },
           }}
         />
         <Typography

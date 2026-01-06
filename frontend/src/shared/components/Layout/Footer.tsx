@@ -1,5 +1,6 @@
 import { Box, Container, Typography, Link as MuiLink } from "@mui/material";
 import { Link } from "react-router-dom";
+import logoImage from "@/uploads/logo.png";
 
 const Footer = () => {
   return (
@@ -12,6 +13,7 @@ const Footer = () => {
         backgroundColor: "background.paper",
         borderTop: "1px solid",
         borderColor: "divider",
+        animation: "fadeInUp 0.6s ease-out",
       }}
     >
       <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
@@ -29,17 +31,35 @@ const Footer = () => {
               maxWidth: { xs: "100%", sm: 300 },
             }}
           >
-            <Typography
-              variant="h5"
+            <Box
               sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
                 mb: 1,
-                fontWeight: 700,
-                color: "primary.main",
-                fontSize: { xs: "1.25rem", sm: "1.5rem" },
               }}
             >
-              🌱 Second Chance
-            </Typography>
+              <Box
+                component="img"
+                src={logoImage}
+                alt="Second Chance Logo"
+                sx={{
+                  height: { xs: 32, sm: 40 },
+                  width: "auto",
+                  display: "block",
+                }}
+              />
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  color: "primary.main",
+                  fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                }}
+              >
+                Second Chance
+              </Typography>
+            </Box>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -72,7 +92,14 @@ const Footer = () => {
               to="/posts"
               color="text.secondary"
               underline="hover"
-              sx={{ fontSize: { xs: "0.8125rem", sm: "0.875rem" } }}
+              sx={{
+                fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.main",
+                  transform: "translateX(4px)",
+                },
+              }}
             >
               Переглянути товари
             </MuiLink>
@@ -81,7 +108,14 @@ const Footer = () => {
               to="/about"
               color="text.secondary"
               underline="hover"
-              sx={{ fontSize: { xs: "0.8125rem", sm: "0.875rem" } }}
+              sx={{
+                fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.main",
+                  transform: "translateX(4px)",
+                },
+              }}
             >
               Про нас
             </MuiLink>
@@ -90,7 +124,14 @@ const Footer = () => {
               to="/contact"
               color="text.secondary"
               underline="hover"
-              sx={{ fontSize: { xs: "0.8125rem", sm: "0.875rem" } }}
+              sx={{
+                fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.main",
+                  transform: "translateX(4px)",
+                },
+              }}
             >
               Контакти
             </MuiLink>

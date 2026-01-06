@@ -36,7 +36,7 @@ export const createQuestion = asyncHandler(
       await Notification.create({
         user: post.user,
         type: "question",
-        message: `Нове питання на ваше оголошення "${post.title}"`,
+        content: `Нове питання на ваше оголошення "${post.title}"`,
         relatedPost: postId,
         relatedUser: req.user!._id,
       });
@@ -105,7 +105,7 @@ export const answerQuestion = asyncHandler(
       await Notification.create({
         user: question.user,
         type: "answer",
-        message: `Відповідь на ваше питання про "${post.title}"`,
+        content: `Відповідь на ваше питання про "${post.title}"`,
         relatedPost: post._id,
         relatedUser: req.user!._id,
       });

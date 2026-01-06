@@ -276,7 +276,13 @@ const PostsPage = () => {
   ).length;
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        minHeight: "100vh",
+        animation: "fadeIn 0.5s ease-out",
+      }}
+    >
       <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         <Box sx={{ py: { xs: 3, sm: 4 } }}>
           <Typography
@@ -287,6 +293,11 @@ const PostsPage = () => {
               fontWeight: 700,
               mb: 1,
               fontSize: { xs: "1.75rem", sm: "2.25rem", md: "2.5rem" },
+              animation: "fadeInDown 0.6s ease-out",
+              background: "linear-gradient(135deg, #2e7d32 0%, #60ad5e 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
             Переглянути товари
@@ -297,6 +308,7 @@ const PostsPage = () => {
             sx={{
               mb: { xs: 3, sm: 4 },
               fontSize: { xs: "0.875rem", sm: "1rem" },
+              animation: "fadeInUp 0.6s ease-out 0.2s both",
             }}
           >
             Відкрийте для себе чудові речі з секонд-хенду від нашої спільноти

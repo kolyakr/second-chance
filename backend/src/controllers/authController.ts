@@ -45,19 +45,17 @@ export const register = asyncHandler(
       emailVerificationToken: verificationToken,
     });
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, verificationToken);
-    } catch (error) {
-      console.error("Error sending verification email:", error);
-      // Don't fail registration if email fails
-    }
-
     // Generate JWT token
     const token = generateToken({
       userId: user._id.toString(),
       email: user.email,
       role: user.role,
+    });
+
+    // Send verification email asynchronously (don't wait for it)
+    sendVerificationEmail(email, verificationToken).catch((error) => {
+      console.error("Error sending verification email:", error);
+      // Don't fail registration if email fails
     });
 
     res.status(201).json({

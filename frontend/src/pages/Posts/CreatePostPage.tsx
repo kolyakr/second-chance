@@ -15,7 +15,7 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
-import { AutoAwesome, ImageSearch } from "@mui/icons-material";
+import { AutoAwesome, ImageSearch, Close } from "@mui/icons-material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
@@ -375,26 +375,55 @@ const CreatePostPage = () => {
                     {imageUrls.map((url, index) => (
                       <Box
                         key={index}
-                        component="img"
-                        src={getImageUrl(url)}
-                        alt={`Upload ${index + 1}`}
                         sx={{
+                          position: "relative",
                           width: { xs: 100, sm: 120 },
                           height: { xs: 100, sm: 120 },
-                          objectFit: "cover",
-                          borderRadius: 2,
-                          border: "1px solid",
-                          borderColor: "divider",
-                          cursor: "pointer",
                         }}
-                        onError={(e) => {
-                          // Fallback to direct URL if helper fails
-                          const target = e.target as HTMLImageElement;
-                          if (target.src !== url) {
-                            target.src = url;
-                          }
-                        }}
-                      />
+                      >
+                        <Box
+                          component="img"
+                          src={getImageUrl(url)}
+                          alt={`Upload ${index + 1}`}
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: 2,
+                            border: "1px solid",
+                            borderColor: "divider",
+                          }}
+                          onError={(e) => {
+                            // Fallback to direct URL if helper fails
+                            const target = e.target as HTMLImageElement;
+                            if (target.src !== url) {
+                              target.src = url;
+                            }
+                          }}
+                        />
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            const newUrls = imageUrls.filter((_, i) => i !== index);
+                            setImageUrls(newUrls);
+                            formik.setFieldValue("images", newUrls);
+                          }}
+                          sx={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            bgcolor: "error.main",
+                            color: "white",
+                            "&:hover": {
+                              bgcolor: "error.dark",
+                            },
+                            width: 24,
+                            height: 24,
+                          }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+                      </Box>
                     ))}
                   </Box>
                 )}

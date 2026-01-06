@@ -81,7 +81,13 @@ const ProfilePage = () => {
   const isFollowing = user.isFollowing === true;
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        minHeight: "100vh",
+        animation: "fadeIn 0.5s ease-out",
+      }}
+    >
       <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
         <Box sx={{ py: { xs: 3, sm: 4 } }}>
           <Paper
@@ -92,6 +98,11 @@ const ProfilePage = () => {
               borderRadius: 3,
               border: "1px solid",
               borderColor: "divider",
+              animation: "fadeInUp 0.6s ease-out",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                boxShadow: "0px 8px 32px rgba(46, 125, 50, 0.1)",
+              },
             }}
           >
             <Box
