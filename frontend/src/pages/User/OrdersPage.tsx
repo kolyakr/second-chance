@@ -381,8 +381,8 @@ const OrdersPage = () => {
                                         ? "Доставлено"
                                         : order.status === "cancelled"
                                         ? "Скасовано"
-                                        : order.status.charAt(0).toUpperCase() +
-                                          order.status.slice(1)
+                                        : String(order.status).charAt(0).toUpperCase() +
+                                          String(order.status).slice(1)
                                     }
                                     color={getStatusColor(order.status) as any}
                                     sx={{ fontWeight: 600, minHeight: 32 }}
@@ -556,8 +556,8 @@ const OrdersPage = () => {
                                         ? "Доставлено"
                                         : order.status === "cancelled"
                                         ? "Скасовано"
-                                        : order.status.charAt(0).toUpperCase() +
-                                          order.status.slice(1)
+                                        : String(order.status).charAt(0).toUpperCase() +
+                                          String(order.status).slice(1)
                                     }
                                     color={getStatusColor(order.status) as any}
                                     sx={{ fontWeight: 600, minHeight: 32 }}
